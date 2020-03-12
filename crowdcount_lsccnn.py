@@ -34,7 +34,7 @@ class CrowdCounter(object):
         if weights_path is None:
             weights_path = chosen_default_weights
         assert os.path.exists(weights_path),'Weights given {} does not exist!'.format(weights_path)
-        self.model.load_state_dict(torch.load(weights_path))
+        self.model.load_state_dict(torch.load(weights_path)['state_dict'])
         self.model.cuda()
         self.model.eval()
         with torch.no_grad():
