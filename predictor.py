@@ -59,9 +59,9 @@ class DSModel:
         image_name = f'{self.cnt_images:05d}'
         print(f"\n- {image_name}: cnt = {predicted_count}")
         # img_out = cv2.cvtColor(img_out, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(
-            os.path.join(image_save_dir, image_name + f"_nmsthr{self.threshold}.jpg"), img_out
-        )
+        #cv2.imwrite(
+        #    os.path.join(image_save_dir, image_name + f"_nmsthr{self.threshold}.jpg"), img_out
+        #)
         return img_out, predicted_count
 
     def predict(self, data, **kwargs):
