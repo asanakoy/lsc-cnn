@@ -78,7 +78,7 @@ class DSModel:
         for obj in data:
             img = obj.image.as_ndarray
             res_img, count = self._predict_single_image(img, str(result_dir))
-            wt = WrappaText(f"Predicted People Count: {count}")
+            wt = WrappaText(f"{count}")
             wi = WrappaImage.init_from_ndarray(
                 payload=res_img,
                 ext=obj.image.ext,
