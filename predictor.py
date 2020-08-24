@@ -3,9 +3,10 @@ import glob
 import cv2
 from pathlib import Path
 import os
+import sys
 from os.path import join
 from tqdm import tqdm
-from wrappa import WrappaObject, WrappaImage
+from wrappa import WrappaObject, WrappaImage, WrappaText
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 print('FILE_DIR:', FILE_DIR)
@@ -19,7 +20,7 @@ from utils_lsccnn import draw_on_image
 def maybe_resize(img):
     h, w = img.shape[:2]
     area = h * w
-    factor = (area / 5.5e6) ** 0.5
+    factor = (area / 5.0e6) ** 0.5
     new_h = int(h / factor)
     new_w = int(w / factor)
     if factor > 1:
@@ -57,9 +58,9 @@ class DSModel:
 
         image_name = f'{self.cnt_images:05d}'
         print(f"\n- {image_name}: cnt = {predicted_count}")
-        img_out = cv2.cvtColor(img_out, cv2.COLOR_RGB2BGR)
+        # img_out = cv2.cvtColor(img_out, cv2.COLOR_RGB2BGR)
         cv2.imwrite(
-            os.path.join(image_save_dir, image_name + f"_nmsthr{args.threshold}.jpg"), img_out
+            os.path.join(image_save_dir, image_name + f"_nmsthr{self.threshold}.jpg"), img_out
         )
         return img_out, predicted_count
 
@@ -69,14 +70,14 @@ class DSModel:
         print(f'predict(payload={data})')
         os.chdir(FILE_DIR)
         print('CUR_DIR:', os.getcwd())
-        result_dir = Path('~/output/').resolve()
+        result_dir = Path('/app/output/').resolve()
         result_dir.mkdir(parents=True, exist_ok=True)
 
         # Data is always an array of WrappaObjects
         responses = []
         for obj in data:
             img = obj.image.as_ndarray
-            res_img, count = self._predict_single_image(img, str(results_dir))
+            res_img, count = self._predict_single_image(img, str(result_dir))
             wt = WrappaText(f"Predicted People Count: {count}")
             wi = WrappaImage.init_from_ndarray(
                 payload=res_img,
