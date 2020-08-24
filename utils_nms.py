@@ -5,13 +5,13 @@ Authors : svp
 
 import numpy as np
 
-'''
+"""
     nms.py: CPU implementation of non maximal supression modified from Ross's code.
     Authors : svp
 
     Modified from https://github.com/rbgirshick/fast-rcnn/blob/master/lib/utils/nms.py
     to accommodate a corner case which handles one box lying completely inside another.
-'''
+"""
 
 
 def nms(dets, thresh):
@@ -48,7 +48,7 @@ def nms(dets, thresh):
     return keep
 
 
-'''
+"""
     Extracts confidence map and box map from N (N=4 here)
     channel input.
 
@@ -61,7 +61,7 @@ def nms(dets, thresh):
     -------
     nms_conf_map - (HXW) single channel confidence score map 
     nms_conf_box - (HXW) single channel box map.
-'''
+"""
 
 
 def extract_conf_points(confidence_map, hmap):
@@ -87,12 +87,12 @@ def extract_conf_points(confidence_map, hmap):
             nms_conf_map[x, y] = confidence_map[1][x, y]
             nms_conf_box[x, y] = hmap[1][x, y]
 
-    assert (np.sum(nms_conf_map > 0) == len(idx_1[0]) + len(idx_2[0]) + len(idx_common[0]))
+    assert np.sum(nms_conf_map > 0) == len(idx_1[0]) + len(idx_2[0]) + len(idx_common[0])
 
     return nms_conf_map, nms_conf_box
 
 
-'''
+"""
     Wrapper function to perform NMS
 
     Parameters:
@@ -111,14 +111,18 @@ def extract_conf_points(confidence_map, hmap):
             points.
     scores - (list) list of confidence for h and w at (x, y) point.
 
-'''
+"""
 
 
 def apply_nms(confidence_map, hmap, wmap, dotmap_pred_downscale=2, thresh=0.3):
-    nms_conf_map, nms_conf_box = extract_conf_points([confidence_map[0], confidence_map[1]], [hmap[0], hmap[1]])
-    
+    nms_conf_map, nms_conf_box = extract_conf_points(
+        [confidence_map[0], confidence_map[1]], [hmap[0], hmap[1]]
+    )
+
     for i in range(2, len(confidence_map)):
-        nms_conf_map, nms_conf_box = extract_conf_points([confidence_map[i], nms_conf_map], [hmap[i], nms_conf_box])
+        nms_conf_map, nms_conf_box = extract_conf_points(
+            [confidence_map[i], nms_conf_map], [hmap[i], nms_conf_box]
+        )
 
     # nms_conf_map, nms_conf_box = extract_conf_points([confidence_map[2], nms_conf_map], [hmap[2], nms_conf_box])
     # nms_conf_map, nms_conf_box = extract_conf_points([confidence_map[3], nms_conf_map], [hmap[3], nms_conf_box])
@@ -141,7 +145,9 @@ def apply_nms(confidence_map, hmap, wmap, dotmap_pred_downscale=2, thresh=0.3):
     y2 = y + h / 2
     scores = confidence_map[dets_idx]
 
-    dets = np.stack([np.array(x1), np.array(y1), np.array(x2), np.array(y2), np.array(scores)], axis=1)
+    dets = np.stack(
+        [np.array(x1), np.array(y1), np.array(x2), np.array(y2), np.array(scores)], axis=1
+    )
     # List of indices to keep
     keep = nms(dets, thresh)
 
