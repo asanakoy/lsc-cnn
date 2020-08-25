@@ -68,13 +68,14 @@ class DSModel:
     def predict(self, data, **kwargs):
         _ = kwargs
 
-        print(f'predict(payload={data})')
+        #print(f'predict(payload={data})')
         os.chdir(FILE_DIR)
-        print('CUR_DIR:', os.getcwd())
+        #print('CUR_DIR:', os.getcwd())
         result_dir = Path('/app/output/').resolve()
         result_dir.mkdir(parents=True, exist_ok=True)
 
         responses = []
+        return responses
         try:
             # Data is always an array of WrappaObjects
             for obj in data:
