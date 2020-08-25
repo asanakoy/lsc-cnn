@@ -62,7 +62,7 @@ class DSModel:
         #cv2.imwrite(
         #    os.path.join(image_save_dir, image_name + f"_nmsthr{self.threshold}.jpg"), img_out
         #)
-        self.cnt_image += 1
+        self.cnt_images += 1
         return img_out, predicted_count
 
     def predict(self, data, **kwargs):
