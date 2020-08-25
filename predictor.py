@@ -62,6 +62,7 @@ class DSModel:
         #cv2.imwrite(
         #    os.path.join(image_save_dir, image_name + f"_nmsthr{self.threshold}.jpg"), img_out
         #)
+        self.cnt_image += 1
         return img_out, predicted_count
 
     def predict(self, data, **kwargs):
@@ -73,17 +74,21 @@ class DSModel:
         result_dir = Path('/app/output/').resolve()
         result_dir.mkdir(parents=True, exist_ok=True)
 
-        # Data is always an array of WrappaObjects
         responses = []
-        for obj in data:
-            img = obj.image.as_ndarray
-            res_img, count = self._predict_single_image(img, str(result_dir))
-            wt = WrappaText(f"{count}")
-            wi = WrappaImage.init_from_ndarray(
-                payload=res_img,
-                ext=obj.image.ext,
-            )
-            resp = WrappaObject(wi, wt)
-            responses.append(resp)
+        try:
+            # Data is always an array of WrappaObjects
+            for obj in data:
+                img = obj.image.as_ndarray
+                res_img, count = self._predict_single_image(img, str(result_dir))
+                wt = WrappaText(f"{count}")
+                wi = WrappaImage.init_from_ndarray(
+                    payload=res_img,
+                    ext=obj.image.ext,
+                )
+                resp = WrappaObject(wi, wt)
+                responses.append(resp)
+        except Exception as e:
+            print(f'Failed to predict! Exception: {e}')
+            print('=================================')
         return responses
 
