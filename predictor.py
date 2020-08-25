@@ -57,7 +57,7 @@ class DSModel:
         img_out = draw_on_image(img_out, predicted_count)
 
         image_name = f'{self.cnt_images:05d}'
-        print(f"\n- {image_name}: cnt = {predicted_count}")
+        print(f"\n- {image_name}: count = {predicted_count}")
         # img_out = cv2.cvtColor(img_out, cv2.COLOR_RGB2BGR)
         #cv2.imwrite(
         #    os.path.join(image_save_dir, image_name + f"_nmsthr{self.threshold}.jpg"), img_out
@@ -75,7 +75,6 @@ class DSModel:
         result_dir.mkdir(parents=True, exist_ok=True)
 
         responses = []
-        return responses
         try:
             # Data is always an array of WrappaObjects
             for obj in data:
@@ -91,5 +90,6 @@ class DSModel:
         except Exception as e:
             print(f'Failed to predict! Exception: {e}')
             print('=================================')
+            responses.append(WrappaObject(WrappaText('Failed to predict.')))
         return responses
 
