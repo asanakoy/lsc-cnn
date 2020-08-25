@@ -31,14 +31,15 @@ def upsample_single(input_, factor=2):
     # Corner case!
     if indices_up.size(0) == 0:
         return torch.zeros(
-            input_.size(0), input_.size(1), input_.size(2) * factor, input_.size(3) * factor
-        ).cuda()
+            input_.size(0), input_.size(1), input_.size(2) * factor, input_.size(3) * factor,
+        device=input_.device)
     indices_up[:, 2] *= factor
     indices_up[:, 3] *= factor
 
     output = torch.zeros(
-        input_.size(0), input_.size(1), input_.size(2) * factor, input_.size(3) * factor
-    ).cuda()
+        input_.size(0), input_.size(1), input_.size(2) * factor, input_.size(3) * factor,
+        device=input_.device
+    )
     output[indices_up[:, 0], indices_up[:, 1], indices_up[:, 2], indices_up[:, 3]] = input_[
         indices[:, 0], indices[:, 1], indices[:, 2], indices[:, 3]
     ]

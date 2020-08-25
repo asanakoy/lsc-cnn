@@ -7,6 +7,7 @@ import sys
 from os.path import join
 from tqdm import tqdm
 import numpy as np
+import torch
 from wrappa import WrappaObject, WrappaImage, WrappaText
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -40,7 +41,8 @@ class DSModel:
         os.chdir(FILE_DIR)
         print('CUR_DIR (__init__):', os.getcwd())
         self.net = LSCCNN(checkpoint_path=ckpt_path, output_downscale=2)
-        self.net.cuda()
+        if torch.cuda.is_available():
+            self.net.cuda()
         self.net.eval()
         self.cnt_images = 0
 
@@ -51,7 +53,7 @@ class DSModel:
         print("img shape:", image.shape)
 
         pred_dot_map, pred_box_map, boxes, img_out = self.net.predict_single_image(
-            image, nms_thresh=self.threshold
+            image, nms_thresh=self.threshold,
         )
         predicted_count = len(boxes)
 

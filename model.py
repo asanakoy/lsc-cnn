@@ -23,12 +23,16 @@ class LSCCNN(nn.Module):
 
         super(LSCCNN, self).__init__()
         self.name = name
+        # if torch.cuda.is_available() and use_gpu:
+        #     self.rgb_means = torch.cuda.FloatTensor([104.008, 116.669, 122.675])
+        # else:
+        #     self.rgb_means = 
+        #self.register_buffer('rgb_means', torch.FloatTensor([104.008, 116.669, 122.675]))
+        self.rgb_means = torch.FloatTensor([104.008, 116.669, 122.675])
         if torch.cuda.is_available():
-            self.rgb_means = torch.cuda.FloatTensor([104.008, 116.669, 122.675])
-        else:
-            self.rgb_means = torch.FloatTensor([104.008, 116.669, 122.675])
+            self.rgb_means.cuda()
         self.rgb_means = (
-            torch.autograd.Variable(self.rgb_means, requires_grad=False)
+            self.rgb_means
             .unsqueeze(0)
             .unsqueeze(2)
             .unsqueeze(3)
@@ -136,7 +140,13 @@ class LSCCNN(nn.Module):
         self.conv_scale1_3 = nn.Conv2d(128, 64, kernel_size=3, padding=1)
 
         if checkpoint_path is not None:
-            self.load_state_dict(torch.load(checkpoint_path)["state_dict"])
+            if torch.cuda.is_available():
+                map_location=lambda storage, loc: storage.cuda()
+            else:
+                map_location='cpu'
+                        
+            checkpoint = torch.load(checkpoint_path, map_location=map_location)
+            self.load_state_dict(checkpoint["state_dict"])
 
     def _initialize_weights(self):
         # initialize all conv W' with a He normal initialization
@@ -300,8 +310,10 @@ class LSCCNN(nn.Module):
         if image.shape[0] % 16 or image.shape[1] % 16:
             image = cv2.resize(image, (image.shape[1] // 16 * 16, image.shape[0] // 16 * 16))
         img_tensor = torch.from_numpy(image.transpose((2, 0, 1)).astype(np.float32)).unsqueeze(0)
+        if torch.cuda.is_available():
+            img_tensor = img_tensor.cuda()
         with torch.no_grad():
-            out = self.forward(img_tensor.cuda())
+            out = self.forward(img_tensor)
         out = get_upsample_output(out, self.output_downscale)
         pred_dot_map, pred_bboxes_size = get_box_and_dot_maps(out, nms_thresh, self.BOXES)
         img_out, boxes = get_boxed_img(
