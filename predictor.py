@@ -6,6 +6,7 @@ import os
 import sys
 from os.path import join
 from tqdm import tqdm
+import numy as np
 from wrappa import WrappaObject, WrappaImage, WrappaText
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -20,7 +21,7 @@ from utils_lsccnn import draw_on_image
 def maybe_resize(img):
     h, w = img.shape[:2]
     area = h * w
-    factor = (area / 5.0e6) ** 0.5
+    factor = (area / 4.5e6) ** 0.5
     new_h = int(h / factor)
     new_w = int(w / factor)
     if factor > 1:
@@ -90,10 +91,6 @@ class DSModel:
         except Exception as e:
             print(f'Failed to predict! Exception: {e}')
             print('=================================')
-            wi = WrappaImage.init_from_ndarray(
-                payload=np.zeros((0,0), dtype=np.uint8)),
-                ext='png',
-            )
-            responses.append(WrappaObject(WrappaText('Failed to predict.'), wi))
+            responses.append(WrappaObject())
         return responses
 
