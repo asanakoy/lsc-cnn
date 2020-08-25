@@ -90,6 +90,10 @@ class DSModel:
         except Exception as e:
             print(f'Failed to predict! Exception: {e}')
             print('=================================')
-            responses.append(WrappaObject(WrappaText('Failed to predict.')))
+            wi = WrappaImage.init_from_ndarray(
+                payload=np.zeros((0,0), dtype=np.uint8)),
+                ext='png',
+            )
+            responses.append(WrappaObject(WrappaText('Failed to predict.'), wi))
         return responses
 
