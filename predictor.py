@@ -6,7 +6,7 @@ import os
 import sys
 from os.path import join
 from tqdm import tqdm
-import numy as np
+import numpy as np
 from wrappa import WrappaObject, WrappaImage, WrappaText
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
